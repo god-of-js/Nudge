@@ -2,6 +2,12 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
 import dashboard from '../views/dashboard.vue';
+import attendance from '../views/attendance.vue';
+import assignments from '../views/assignments.vue';
+import call from '../views/call.vue';
+import notes from '../views/notes.vue';
+import profile from '../views/profile.vue';
+import setSchedule from '../views/setSchedule.vue';
 import login from '../views/login.vue';
 import preregister from '../views/preregister.vue';
 import register from '../views/register.vue';
@@ -56,7 +62,31 @@ const routes = [
       {
         path: '/dashboard',
         component: dashboard
-      }
+      },
+      {
+        path: '/assignments',
+        component: assignments
+      },
+      {
+        path: '/attendance',
+        component: attendance
+      },
+      {
+        path: '/call',
+        component: call
+      },
+      {
+        path: '/notes',
+        component: notes
+      },
+      {
+        path: '/profile',
+        component: profile
+      },
+      {
+        path: '/set-schedule',
+        component: setSchedule
+      },
     ]
   }
 

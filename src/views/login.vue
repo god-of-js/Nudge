@@ -56,7 +56,6 @@ export default {
     //       .createUserWithEmailAndPassword(this.email, this.password)
     //       .then(result => {
     //         let vueApp = this; //because *this* is not available in the store
-
     //       })
     //       .catch(e => {
     //         this.loading = !this.loading;
@@ -124,7 +123,7 @@ export default {
 .spans {
   color: #3b28c7;
 }
-@media screen and (max-width: 320px) and (max-height: 568px){
+@media screen and (max-width: 320px) and (max-height: 568px) {
   .image {
     margin-top: 0%;
     margin-bottom: 0%;

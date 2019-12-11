@@ -1,8 +1,6 @@
 import firebase from 'firebase/app'
-import 'firebase/database'
 import 'firebase/firestore'
 import 'firebase/auth'
-import 'firebase/storage'
 var firebaseConfig = {
     apiKey: "AIzaSyDSbm64hnhdDXN88k9uGdkBPz2ikxTR7cw",
     authDomain: "personal-nudge.firebaseapp.com",
@@ -15,6 +13,5 @@ var firebaseConfig = {
   };
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
-  firebase.analytics();
 export const db = firebase.firestore();
 export const auth = firebase.auth();

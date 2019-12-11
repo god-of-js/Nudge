@@ -11,12 +11,12 @@
           ></v-img>
         </v-row>
         <v-container class="form">
-          <v-form class="vform">
+          <v-form class="vform" action="submit" @submit="reg">
             <v-text-field v-model="name" label="Name"></v-text-field>
             <v-text-field v-model="email" label="E-mail"></v-text-field>
-            <v-text-field v-model="password" label="Password"></v-text-field>
+            <v-text-field v-model="password" label="Password" type="password"></v-text-field>
             <v-row>
-              <v-btn tile class="btns" color="#3b28c7" :loading="loading">
+              <v-btn tile class="btns" color="#3b28c7" :loading="loading" type="submit">
                 <span class="span">Register</span>
               </v-btn>
               <v-btn class="btns" color="white" text to="/login">
@@ -40,7 +40,7 @@
   </v-content>
 </template>
 <script>
-// import { auth } from '@/plugins/firebase.js'
+import { auth } from "@/plugins/firebase.js";
 export default {
   data: () => {
     return {
@@ -54,16 +54,21 @@ export default {
     reg(e) {
       e.preventDefault();
       this.loading = !this.loading;
-      //   auth
-      //     .createUserWithEmailAndPassword(this.email, this.password)
-      //     .then(result => {
-      //       let vueApp = this; //because *this* is not available in the store
+      auth
+        .createUserWithEmailAndPassword(this.email, this.password)
+        .then(result => {
+          let vueApp = this; //because *this* is not available in the store
 
-      //     })
-      //     .catch(e => {
-      //       this.loading = !this.loading;
-      //       prompt(e);
-      //     });
+          this.$store.dispatch("createUserProfile", {
+            //dispatch is used to activate actions. we are dispatching this values to the store actions
+            vueApp,
+            user: result.user
+          });
+        })
+        .catch(e => {
+          this.loading = !this.loading;
+          prompt(e);
+        });
     }
   }
 };
@@ -126,7 +131,7 @@ export default {
 .spans {
   color: #3b28c7;
 }
-@media screen and (max-width: 320px) and (max-height: 568px){
+@media screen and (max-width: 320px) and (max-height: 568px) {
   .image {
     margin-top: 0%;
     margin-bottom: 0%;
