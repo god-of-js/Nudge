@@ -14,11 +14,15 @@ auth.onAuthStateChanged(user => {
 });
 const store = new Vuex.Store({
   state: {
-    currentUser: null
+    currentUser: null,
+    fields: 0
   },
   mutations: {
     setCurrentUser: (state, val) => {
       state.currentUser = val
+    },
+    addFields: (state) => {
+      state.fields++
     }
   },
   actions: {
@@ -42,6 +46,11 @@ const store = new Vuex.Store({
             commit("setCurrentUser", doc.data());
           });
         });
+    },
+    addFields({commit}) {
+      console.log('us')
+      
+      commit("addFields")
     }
   },
   modules: {}

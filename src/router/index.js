@@ -4,6 +4,8 @@ import Home from '../views/Home.vue';
 import dashboard from '../views/dashboard.vue';
 import attendance from '../views/attendance.vue';
 import assignments from '../views/assignments.vue';
+import classinvite from '../views/classinvite.vue';
+import createclass from '../views/createclass.vue';
 import call from '../views/call.vue';
 import notes from '../views/notes.vue';
 import profile from '../views/profile.vue';
@@ -29,21 +31,28 @@ const routes = [
     path: '/login',
     component: login
   },
+  {
+    path: '/createclass',
+    component: createclass
+  },
+  {
+    path: '/classinvite',
+    component: classinvite
+  },
+  {
+    path: '/preregister',
+    name: 'preregister',
+    component: preregister,
+  },
 
   {
     path: '/',
-    name: 'home',
     component: HomeLayout,
     children: [
       {
         path: '/',
         name: 'home',
         component: Home,
-      },
-      {
-        path: '/preregister',
-        name: 'preregister',
-        component: preregister,
       },
       {
         path: '/about',
