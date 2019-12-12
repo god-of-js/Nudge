@@ -1,11 +1,11 @@
 <template>
   <v-content class="content">
     <div class="form">
-      <v-form action="submit" @submit="createClass">
+      <v-form action="submit" @submit="createClass" ref="form">
         <v-autocomplete :items="universities" label="University" v-model="university" required></v-autocomplete>
-        <v-text-field label="Department" v-model="department" />
+        <v-text-field label="Department(Make sure your department is as accurate as possible)" v-model="department" />
         <v-autocomplete :items="years" label="Year of study" v-model="year" required></v-autocomplete>
-        <v-btn type="submit" color="#3b28c7">Create Class</v-btn>
+        <v-btn type="submit" color="#3b28c7" :loading="loading">Create Class</v-btn>
       </v-form>
     </div>
   </v-content>
@@ -141,22 +141,49 @@ export default {
       ],
       university: null,
       department: null,
-      year: null
+      year: null,
+      loading: false
     };
   },
   methods: {
     createClass(e) {
       e.preventDefault();
+      this.loading = !this.loading;
       const classInfo = {
         university: this.university,
         department: this.department,
-        year: this.year
+        year: this.year,
+        classId: this.$store.state.currentUser.userId
       };
+
       db.collection("class")
         .doc(this.$store.state.currentUser.userId)
-        .set(classInfo).then(() => {
-            
+        .set(classInfo);
+        db.collection("users")
+        .where("userId", "==", this.$store.state.currentUser.userId)
+        .get()
+        .then(result => {
+          this.loading = !this.loading;
+          result.forEach(doc => {
+            var data = doc.data();
+           data.yearId = this.$store.state.currentUser.userId
+           data.isAdmin = true;
+           data.university = classInfo.university;
+           data.department = classInfo.department;
+           data.year = classInfo.year
+            this.$store.dispatch("makeAdmin", data)
+          })
         })
+        console.log(this.$store.state.currentUser)
+        db.collection("users").doc(this.$store.state.currentUser.userId)
+          .set(this.$store.state.currentUser).then(() => {
+            this.loading = !this.loading;
+            this.$refs.form.reset()
+      this.$router.push("/dashboard");
+          }).catch(e => {
+            prompt(e)
+            this.loading = !this.loading
+          })
     }
   }
 };

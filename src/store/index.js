@@ -23,6 +23,9 @@ const store = new Vuex.Store({
     },
     addFields: (state) => {
       state.fields++
+    },
+    makeAdmin: (state, data) => {
+      state.currentUser = data
     }
   },
   actions: {
@@ -34,7 +37,7 @@ const store = new Vuex.Store({
         is_online: false
       }
       db.collection("users").doc(user.uid).set(userData)
-      vueApp.$router.push("/dashboard")
+      vueApp.$router.push("/preregister")
       commit("createUserProfile", userData)
     },
     getUserProfile({ commit }, uid) {
@@ -44,13 +47,17 @@ const store = new Vuex.Store({
           query.forEach(doc => {
             window.localStorage.setItem('currentUser', JSON.stringify(doc.data()))
             commit("setCurrentUser", doc.data());
+            console.log(doc.data())
           });
         });
     },
-    addFields({commit}) {
+    addFields({ commit }) {
       console.log('us')
-      
+
       commit("addFields")
+    },
+    makeAdmin({ commit }, data) {
+      commit("makeAdmin", data)
     }
   },
   modules: {}
