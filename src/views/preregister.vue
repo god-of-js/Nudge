@@ -1,6 +1,6 @@
 <template>
   <v-content class="content">
-    <div class="img mt-6">
+    <div class="img ">
       <v-row align="center" justify="center">
         <v-img src="../assets/clip-education.png" aspect-ratio="1" max-width="350" max-height="200"></v-img>
       </v-row>
@@ -9,7 +9,7 @@
           <span class="span">Register your class as an Admin</span>
         </v-btn>
         <v-btn color="#3b28c7" class="btns" to="classinvite">
-          <span class="span">Enter your class as an Student</span>
+          <span class="span">Enter your class as a Student</span>
         </v-btn>
         <v-btn color="#3b28c7" class="btns" to="/dashboard">
           <span class="span">Personal Scheduling</span>

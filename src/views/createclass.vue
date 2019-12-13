@@ -3,6 +3,7 @@
     <div class="form">
       <v-form action="submit" @submit="createClass" ref="form">
         <v-autocomplete :items="universities" label="University" v-model="university" required></v-autocomplete>
+        <v-text-field label="Faculty(Make sure your Faculty is as accurate as possible)" v-model="faculty" />
         <v-text-field label="Department(Make sure your department is as accurate as possible)" v-model="department" />
         <v-autocomplete :items="years" label="Year of study" v-model="year" required></v-autocomplete>
         <v-btn type="submit" color="#3b28c7" :loading="loading">Create Class</v-btn>
@@ -140,6 +141,7 @@ export default {
         "700 Level"
       ],
       university: null,
+      faculty:  null,
       department: null,
       year: null,
       loading: false
@@ -149,13 +151,28 @@ export default {
     createClass(e) {
       e.preventDefault();
       this.loading = !this.loading;
+      const university = {
+        name: this.university
+      }
       const classInfo = {
         university: this.university,
         department: this.department,
         year: this.year,
+        faculty: this.faculty,
         classId: this.$store.state.currentUser.userId
       };
-
+      const facultyInfo = {
+        university: this.university,
+        faculty: this.faculty
+      }
+      const departmentinfo = {
+        university: this.university,
+        department: this.department,
+        faculty: this.faculty
+      }
+      db.collection("universities").doc(`${this.university}`).set(university)
+      db.collection("faculties").doc(`${this.faculty}`).set(facultyInfo)
+      db.collection("department").doc(`${this.department}`).set(departmentinfo)
       db.collection("class")
         .doc(this.$store.state.currentUser.userId)
         .set(classInfo);
@@ -170,11 +187,11 @@ export default {
            data.isAdmin = true;
            data.university = classInfo.university;
            data.department = classInfo.department;
+           data.faculty = classInfo.faculty
            data.year = classInfo.year
             this.$store.dispatch("makeAdmin", data)
           })
         })
-        console.log(this.$store.state.currentUser)
         db.collection("users").doc(this.$store.state.currentUser.userId)
           .set(this.$store.state.currentUser).then(() => {
             this.loading = !this.loading;

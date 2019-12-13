@@ -12,7 +12,6 @@
               <v-list-item-title>Home</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-
             </v-tab>
             <v-tab to="/profile">
           <v-list-item>
