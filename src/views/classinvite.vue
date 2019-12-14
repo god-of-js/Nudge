@@ -147,7 +147,6 @@ export default {
             studentData.university = university;
             studentData.faculty = faculty;
             studentData.year = years;
-            console.log(studentData)
             this.$store.dispatch("enterClass", { studentData, vueApp });
           });
         });

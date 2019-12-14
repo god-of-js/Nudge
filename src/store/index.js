@@ -55,11 +55,29 @@ const store = new Vuex.Store({
         name: vueApp.name,
         email: vueApp.email,
         userId: user.uid,
-        is_online: false
+        is_online: false,
+        department: null,
+        faculty: null,
+        university: null,
+        isAdmin: false,
+        yearId: null,
+        year: null
       }
       db.collection("users").doc(user.uid).set(userData)
-      vueApp.$router.push("/preregister")
       commit("createUserProfile", userData)
+      const Toast = vueApp.$swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        type: "success",
+        title: "Succeessfully registered. Complete registration by choosing a plan"
+      });
+      Toast.fire({
+        type: "success",
+        title: "Succeessfully registered. Complete registration by choosing a plan"
+      });
+      vueApp.$router.push("/preregister")
     },
     getUserProfile({ commit }, uid) {
       db.collection("users").where("userId", "==", uid)

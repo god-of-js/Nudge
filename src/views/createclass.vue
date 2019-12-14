@@ -3,8 +3,14 @@
     <div class="form">
       <v-form action="submit" @submit="createClass" ref="form">
         <v-autocomplete :items="universities" label="University" v-model="university" required></v-autocomplete>
-        <v-text-field label="Faculty(Make sure your Faculty is as accurate as possible)" v-model="faculty" />
-        <v-text-field label="Department(Make sure your department is as accurate as possible)" v-model="department" />
+        <v-text-field
+          label="Faculty(Make sure your Faculty is as accurate as possible)"
+          v-model="faculty"
+        />
+        <v-text-field
+          label="Department(Make sure your department is as accurate as possible)"
+          v-model="department"
+        />
         <v-autocomplete :items="years" label="Year of study" v-model="year" required></v-autocomplete>
         <v-btn type="submit" color="#3b28c7" :loading="loading">Create Class</v-btn>
       </v-form>
@@ -141,7 +147,7 @@ export default {
         "700 Level"
       ],
       university: null,
-      faculty:  null,
+      faculty: null,
       department: null,
       year: null,
       loading: false
@@ -153,7 +159,7 @@ export default {
       this.loading = !this.loading;
       const university = {
         name: this.university
-      }
+      };
       const classInfo = {
         university: this.university,
         department: this.department,
@@ -164,43 +170,55 @@ export default {
       const facultyInfo = {
         university: this.university,
         faculty: this.faculty
-      }
+      };
       const departmentinfo = {
         university: this.university,
         department: this.department,
         faculty: this.faculty
-      }
-      db.collection("universities").doc(`${this.university}`).set(university)
-      db.collection("faculties").doc(`${this.faculty}`).set(facultyInfo)
-      db.collection("department").doc(`${this.department}`).set(departmentinfo)
-      db.collection("class")
-        .doc(this.$store.state.currentUser.userId)
-        .set(classInfo);
+      };
+      if (
+        classInfo.university == null ||
+        classInfo.department == null ||
+        classInfo.faculty == null ||
+        classInfo.year == null
+      ) {
+        alert("Try filling up all fields");
+        this.loading = !this.loading;
+      } else {
+        db.collection("universities")
+          .doc(`${this.university}`)
+          .set(university);
+        db.collection("faculties")
+          .doc(`${this.faculty} ${this.university}`)
+          .set(facultyInfo);
+        db.collection("department")
+          .doc(`${this.department}`)
+          .set(departmentinfo);
+        db.collection("class")
+          .doc(this.$store.state.currentUser.userId)
+          .set(classInfo);
+              var data = this.$store.state.currentUser;
+              data.yearId = this.$store.state.currentUser.userId;
+              data.isAdmin = true;
+              data.university = classInfo.university;
+              data.department = classInfo.department;
+              data.faculty = classInfo.faculty;
+              data.year = classInfo.year;
+              this.$store.dispatch("makeAdmin", data);
         db.collection("users")
-        .where("userId", "==", this.$store.state.currentUser.userId)
-        .get()
-        .then(result => {
-          this.loading = !this.loading;
-          result.forEach(doc => {
-            var data = doc.data();
-           data.yearId = this.$store.state.currentUser.userId
-           data.isAdmin = true;
-           data.university = classInfo.university;
-           data.department = classInfo.department;
-           data.faculty = classInfo.faculty
-           data.year = classInfo.year
-            this.$store.dispatch("makeAdmin", data)
-          })
-        })
-        db.collection("users").doc(this.$store.state.currentUser.userId)
-          .set(this.$store.state.currentUser).then(() => {
+          .doc(this.$store.state.currentUser.userId)
+          .set(this.$store.state.currentUser)
+          .then(() => {
             this.loading = !this.loading;
-            this.$refs.form.reset()
-      this.$router.push("/dashboard");
-          }).catch(e => {
-            prompt(e)
-            this.loading = !this.loading
+            this.$refs.form.reset();
+            this.$toasted.success("Successfully created class as an admin");
+            this.$router.push("/dashboard");
           })
+          .catch(e => {
+            prompt(e);
+            this.loading = !this.loading;
+          });
+      }
     }
   }
 };
