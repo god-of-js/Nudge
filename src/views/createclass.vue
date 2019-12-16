@@ -165,16 +165,21 @@ export default {
         department: this.department,
         year: this.year,
         faculty: this.faculty,
-        classId: this.$store.state.currentUser.userId
+        classId: this.$store.state.currentUser.userId,
+        departmentId: `${this.department} ${this.faculty} ${this.university}`,
+        facultyId: `${this.faculty} ${this.university}`
       };
       const facultyInfo = {
         university: this.university,
-        faculty: this.faculty
+        faculty: this.faculty,
+        facultyId: `${this.faculty} ${this.university}`
       };
       const departmentinfo = {
         university: this.university,
         department: this.department,
-        faculty: this.faculty
+        faculty: this.faculty,
+        departmentId: `${this.department} ${this.faculty} ${this.university}`,
+        facultyId: `${this.faculty} ${this.university}`
       };
       if (
         classInfo.university == null ||
@@ -192,7 +197,7 @@ export default {
           .doc(`${this.faculty} ${this.university}`)
           .set(facultyInfo);
         db.collection("department")
-          .doc(`${this.department}`)
+          .doc(`${this.department} ${this.faculty} ${this.university}`)
           .set(departmentinfo);
         db.collection("class")
           .doc(this.$store.state.currentUser.userId)
@@ -204,14 +209,14 @@ export default {
               data.department = classInfo.department;
               data.faculty = classInfo.faculty;
               data.year = classInfo.year;
+              window.localStorage.setItem('currentUser', JSON.stringify(data))
               this.$store.dispatch("makeAdmin", data);
         db.collection("users")
           .doc(this.$store.state.currentUser.userId)
-          .set(this.$store.state.currentUser)
+          .set(data)
           .then(() => {
             this.loading = !this.loading;
             this.$refs.form.reset();
-            this.$toasted.success("Successfully created class as an admin");
             this.$router.push("/dashboard");
           })
           .catch(e => {

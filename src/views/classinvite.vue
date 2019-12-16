@@ -27,7 +27,7 @@
           </thead>
           <tbody v-for="faculty in faculty" :key="faculty.faculty">
             <tr>
-              <td @click="departments(faculty.faculty)">{{ faculty.faculty}}</td>
+              <td @click="departments(faculty.facultyId)">{{ faculty.faculty}}</td>
               <td></td>
             </tr>
           </tbody>
@@ -103,11 +103,11 @@ export default {
           });
         });
     },
-    departments(name) {
+    departments(facId) {
       this.listOfFaculties = false;
       this.listOfDepartments = true;
       db.collection("department")
-        .where("faculty", "==", name)
+        .where("facultyId", "==", facId)
         .get()
         .then(query => {
           query.forEach(dept => {
@@ -132,11 +132,13 @@ export default {
     joinClass(id) {
       const year = this.$store.state.year[0];
       const vueApp = this;
+      
       db.collection("users")
         .where("userId", "==", this.$store.state.currentUser.userId)
         .get()
         .then(user => {
           user.forEach(student => {
+            window.localStorage.removeItem("currentUser");
             const studentData = student.data();
             const department = year.department;
             const university = year.university;
@@ -147,6 +149,7 @@ export default {
             studentData.university = university;
             studentData.faculty = faculty;
             studentData.year = years;
+              window.localStorage.setItem("currentUser", JSON.stringify(studentData))
             this.$store.dispatch("enterClass", { studentData, vueApp });
           });
         });

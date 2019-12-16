@@ -11,7 +11,7 @@
         <v-btn color="#3b28c7" class="btns" to="classinvite">
           <span class="span">Enter your class as a Student</span>
         </v-btn>
-        <v-btn color="#3b28c7" class="btns" to="/dashboard">
+        <v-btn color="#3b28c7" class="btns" @click="personal()" :loading="loading">
           <span class="span">Personal Scheduling</span>
         </v-btn>
       </div>
@@ -19,14 +19,24 @@
   </v-content>
 </template>
 <script>
+import {db} from '@/plugins/firebase.js'
 export default {
   data: () => {
-    return {};
+    return {
+      loading: false
+    };
   },
   methods: {
-    reg(e) {
-      e.preventDefault();
+    personal() {
       this.loading = !this.loading;
+      const uId = this.$store.state.currentUser.userId
+      this.$store.state.currentUser.yearId = uId
+     const  currentUser = this.$store.state.currentUser
+    db.collection("users").doc(this.$store.state.currentUser.userId).set(currentUser)
+    .then(() => {
+      this.$store.dispatch("personal", currentUser)
+      this.$router.push("/dashboard")
+    })
     }
   }
 };

@@ -9,18 +9,21 @@ auth.onAuthStateChanged(user => {
   user
     ? (async () => {
       store.dispatch("getUserProfile", user.uid);
+      store.dispatch("getSchedule")
     })()
     : null;
 });
 const store = new Vuex.Store({
   state: {
     currentUser: null,
-    fields: 0,
+    localCurrentUser: null,
+    fields: 1,
     universities: [],
     faculty: [],
     department: [],
     year: [],
-    classDetails: []
+    classDetails: [],
+    schedules: []
   },
   mutations: {
     setCurrentUser: (state, val) => {
@@ -44,10 +47,13 @@ const store = new Vuex.Store({
     setYears: (state, years) => {
       state.year = years
     },
-    setUserClassDetails: (state, studentData) =>  {
+    setUserClassDetails: (state, studentData) => {
       state.classDetails = studentData
+    },
+    setSchedule: (state, schedule) => {
+      state.schedules.push(schedule)
     }
-    
+
   },
   actions: {
     createUserProfile({ commit }, { vueApp, user }) {
@@ -65,29 +71,18 @@ const store = new Vuex.Store({
       }
       db.collection("users").doc(user.uid).set(userData)
       commit("createUserProfile", userData)
-      const Toast = vueApp.$swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        type: "success",
-        title: "Succeessfully registered. Complete registration by choosing a plan"
-      });
-      Toast.fire({
-        type: "success",
-        title: "Succeessfully registered. Complete registration by choosing a plan"
-      });
+
       vueApp.$router.push("/preregister")
     },
     getUserProfile({ commit }, uid) {
-      db.collection("users").where("userId", "==", uid)
+      db.collection("users").where("userId", "==", uid) //checking if the userid is equal to the user id in firestore
         .get()
         .then(query => {
           query.forEach(doc => {
-            window.localStorage.setItem('currentUser', JSON.stringify(doc.data()))
             commit("setCurrentUser", doc.data());
           });
         });
+
     },
     addFields({ commit }) {
       commit("addFields")
@@ -124,14 +119,27 @@ const store = new Vuex.Store({
       years.push(yearData)
       commit("setYears", years)
     },
-    enterClass({commit }, {studentData, vueApp}) {
-      // const year = state.year
-      
-   
+    enterClass({ commit }, { studentData, vueApp }) {
       db.collection("users").doc(studentData.userId).set(studentData)
-    commit("setUserClassDetails", studentData)
-    vueApp.$router.push("/dashboard")
+      commit("setUserClassDetails", studentData)
+      vueApp.$router.push("/dashboard")
+    },
+    personal({ commit }, currentUser) {
+      commit("setCurrentUser", currentUser)
+    },
+    getSchedule({ commit, state }) {
+      db.collection("schedule")
+        .where("classId", "==", state.currentUser.yearId)
+        .get()
+        .then(result => {
+          result.forEach(sch => {
+            const schedule = sch.data()
+            console.log(schedule)
+            commit("setSchedule", schedule)
+          })
+        })
     }
+
   },
   modules: {}
 });

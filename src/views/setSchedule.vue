@@ -8,11 +8,11 @@
           <v-autocomplete :items="weekday" label="Day" v-model="day1" required></v-autocomplete>
           <v-text-field v-model="time1" label="Time format(00(hrs):00(sec))" class="mr-4 ml-4" type="time"></v-text-field>
         </v-row>
-        <v-row v-if="this.$store.state.fields == 1">
+        <v-row v-if="this.$store.state.fields > 1">
           <v-text-field v-model="sch2" label="Schedule" class="ml-4 mr-4"></v-text-field>
           <v-text-field v-model="loc2" label="Location" class="ml-4 mr-4"></v-text-field>
           <v-autocomplete :items="weekday" label="Day" v-model="day2" required></v-autocomplete>
-          <v-input v-model="time2" label="Time format(00(hrs):00(sec))"  type="time" class="mr-4 ml-4"></v-input>
+          <v-text-field v-model="time2" label="Time format(00(hrs):00(sec))"  type="time" class="mr-4 ml-4"></v-text-field>
         </v-row>
         <v-row v-if="this.$store.state.fields > 2">
           <v-text-field v-model="sch3" label="Schedule" class="ml-4 mr-4"></v-text-field>
@@ -113,7 +113,6 @@ import { db } from "@/plugins/firebase.js";
 export default {
   data() {
     return {
-        dateRules: ["^(0?[1-9]|1[012]):[0-5][0-9]$"],
       loading: false,
       valid: false,
       sch1: "",
@@ -198,15 +197,20 @@ export default {
       let schedule = {};
       const fields = this.$store.state.fields;
       for (let i = 1; i <= fields; i++) {
-        schedule["sche" + i] = this["sche" + i];
+        schedule["sch" + i] = this["sch" + i];
         schedule["loc" + i] = this["loc" + i];
         schedule["day" + i] = this["day" + i];
         schedule["time" + i] = this["time" + i];
+        console.log("done")
       }
-      let obj = { fields, schedule };
+      const classId = this.$store.state.currentUser.yearId;
+      let obj = { fields, schedule, classId};
+      console.log(obj)
       db.collection("schedule")
-        .doc(this.$store.state.currentUser.class.classId)
-        .set(obj)
+        .doc(this.$store.state.currentUser.yearId)
+        .set(obj).then(() => {
+      this.loading = !this.loading;
+        })
         .catch(e => {
           this.loading = !this.loading;
           prompt(e);
